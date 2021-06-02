@@ -20,6 +20,7 @@ In this project a simplified version of [**Battleship**](https://en.wikipedia.or
 ### Gameplay 
 ![Start](1.png?raw=true "Optional Title")
 ![Start](2.png?raw=true "Optional Title")
+##### After several turns
 ![Start](3.png?raw=true "Optional Title")
 
 ## File List
