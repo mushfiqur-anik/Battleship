@@ -1,7 +1,7 @@
 # Battleship Game
   
 ## Description of the problem
-In this project a simplified version of * [**Battleship**](https://en.wikipedia.org/wiki/Battleship_(game)) is built and player between Human (User) against Computer.
+In this project a simplified version of [**Battleship**](https://en.wikipedia.org/wiki/Battleship_(game)) is built and player between Human (User) against Computer.
 
 ## Rules
 1) Each player (Human & Computer) places 6 ships & 4 Grenades in each coordinate. Valid coordinates are character A-H or a-h followed by number 1 to 8.
@@ -16,6 +16,11 @@ In this project a simplified version of * [**Battleship**](https://en.wikipedia.
 4) The game continues until all 6 ships are sunk (Rocket hits the coordinates where there is a ship) for one of the players.
 5) The player who hit all 6 ships of the other player is declared the winner.
 6) All the initial placements of Ships & Grenades for each player is displayed.
+
+### Gameplay 
+![Start](1.png?raw=true "Optional Title")
+![Start](2.png?raw=true "Optional Title")
+![Start](3.png?raw=true "Optional Title")
 
 ## File List
 - Player.java
