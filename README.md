@@ -14,7 +14,7 @@ In this project a simplified version of [**Battleship**](https://en.wikipedia.or
 	 - If rocket falls in a coordinate which has been called before, nothing happens, and we display the previous coordinates.
 3) The Computer launches rocket and the above rules are applied as well.
 4) The game continues until all 6 ships are sunk (Rocket hits the coordinates where there is a ship) for one of the players.
-5) The player who hit all 6 ships of the other player is declared the winner.
+5) The player who hits all 6 ships of the other player is declared the winner.
 6) All the initial placements of Ships & Grenades for each player is displayed.
 
 ### Gameplay 
