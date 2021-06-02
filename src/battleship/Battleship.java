@@ -1,29 +1,46 @@
 package battleship;
 import java.util.Scanner;
 
+/* This file contains all the necessary methods & attributes for the battleship game
+ *  Rules: 
+ *  Each player (Human & Computer) places 6 ships & 4 Grenades in each coordinate. Valid coordinates are character A-H or a-h followed by number 1 to 8.
+	Each position can only hold one type of element (Ship or Grenade)
+	The elements are hidden initially so ensure the players doesn't know each other's placements
+	The Human (User) launches rocket first in one of the valid coordinates.
+	If rocket falls in a coordinate where there is nothing, '*' is displayed
+	If rocket fall in a coordinate where there is a Ship -> if it human's ship then we display 's' or 'S' for computer's ship.
+	If rocket fall in a coordinate where there is a Grenade -> if it's human's grenade we display 'g' and 'G' for computer's ship and the player loses next turn (The other player hits twice)
+	If rocket falls in a coordinate which has been called before, nothing happens, and we display the previous coordinates.
+	The Computer launches rocket and the above rules are applied as well.
+	The game continues until all 6 ships are sunk (Rocket hits the coordinates where there is a ship) for one of the players.
+	The player who hit all 6 ships of the other player is declared the winner.
+	All the initial placements of Ships & Grenades for each player is displayed.
+ * Author: Mushfiqur Anik
+ * */
+
 public class Battleship {
 	// Attributes
 	private Player[][] p = new Player[8][8];
 	private char[][] displayGrid = new char[8][8];
 	Scanner keyboard = new Scanner(System.in);
-
-	private String coord;
-	private int hShip = 0;
+	private String coord; // Get coordinates from Human
+	private int hShip = 0; // Number of ships sunk
 	private int cShip = 0;
-	private int numOfTurns = 0;
-	private boolean isHuman = true;
-	private int[] coordinates = new int[2];
-	
 	private Type type = null;
 	private Owner owner = null;
+	private int numOfTurns = 0; 
+	private boolean isHuman = true;
+	private int[] coordinates = new int[2]; // Coordinates 
 	
-	// Methods
+	// Main game loop
 	public void play() { 
 		
+		// Repeat until all Ships of one of the players have been sunk
 		do {
-			if(numOfTurns == 0) { numOfTurns = 1; }
+			if(numOfTurns == 0) { numOfTurns = 1; } // If one player's turn is finished - set it up for next player
 			
 			outerloop:
+		    // Launches rocket
 			while(numOfTurns > 0) {
 				
 				if(isHuman) {
@@ -33,89 +50,95 @@ public class Battleship {
 					coordinates = getCoords(owner.COMPUTER, type.ROCKET);
 				} 
 				
-				// If is called before then nothing.
-				if(p[coordinates[0]][coordinates[1]].isCalled()) { 
-					// Do nothing
-					displayGrid();
-					numOfTurns--;
-				} else { 
-				
-					if(launchRocket() == 2) { 
-						break outerloop;
-					}	
-				}
+					
+				// Launch rocket 
+				// If Grenade is hit, the other player plays twice
+				if(launchRocket() == 2) { 
+					break outerloop;
+				}	
 			} 
 			
-			
 			System.out.println("");
-			isHuman = !isHuman;
+			isHuman = !isHuman; // Change player i.e From Human to Computer or vice versa
 			
-		} while(cShip < 4 && hShip < 4);
+		} while(cShip < 6 && hShip < 6);
 		
-	
-		
-		winner(hShip, cShip);
-		displayInitialGrid();
+		winner(hShip, cShip); // Check and declare winner
+		displayInitialGrid(); // Display initial position of Ships & Grenades for both players
 	}
 	
 	// Launch rocket 
+	// Returns the number of turn for the next player
 	public int launchRocket() { 
-			switch(p[coordinates[0]][coordinates[1]].getType()) { 
-			case NOTHING:
-				p[coordinates[0]][coordinates[1]].setiSCalled(true);
-				System.out.println("Nothing hit");
-				displayGrid[coordinates[0]][coordinates[1]] = '*';
+		
+			// If this coordinate has been called before then nothing happens
+			if(p[coordinates[0]][coordinates[1]].isCalled()) { 
+				// Do nothing
+				System.out.println("This position has been called before, nothing happens!");
 				displayGrid();
 				numOfTurns--;
-				return numOfTurns;
-			case SHIP:
-				if(p[coordinates[0]][coordinates[1]].getOwner() == owner.HUMAN) { 
-					p[coordinates[0]][coordinates[1]].setiSCalled(true);
-					displayGrid[coordinates[0]][coordinates[1]] = 's'; 
-					System.out.println("Your ship has been hit!");
-					hShip++;
-				    displayGrid();
-				} else { 
-					p[coordinates[0]][coordinates[1]].setiSCalled(true);
-					System.out.println("Computer's ship has been hit!");
-					displayGrid[coordinates[0]][coordinates[1]] = 'S'; 
-					cShip++;
-					displayGrid();
+			} else {
+					switch(p[coordinates[0]][coordinates[1]].getType()) { 
+					
+					case NOTHING:
+						p[coordinates[0]][coordinates[1]].setiSCalled(true);
+						System.out.println("Nothing was hit");
+						displayGrid[coordinates[0]][coordinates[1]] = '*';
+						displayGrid();
+						numOfTurns--;
+						return numOfTurns;
+						
+					case SHIP:
+						if(p[coordinates[0]][coordinates[1]].getOwner() == owner.HUMAN) { 
+							p[coordinates[0]][coordinates[1]].setiSCalled(true);
+							System.out.println("Your ship has been hit!");
+							displayGrid[coordinates[0]][coordinates[1]] = 's'; 
+							displayGrid();
+							hShip++;
+						    
+						} else { 
+							p[coordinates[0]][coordinates[1]].setiSCalled(true);
+							System.out.println("Computer's ship has been hit!");
+							displayGrid[coordinates[0]][coordinates[1]] = 'S'; 
+							cShip++;
+							displayGrid();
+						}
+						numOfTurns--;
+						return numOfTurns;
+						
+					case GRENADE:
+						p[coordinates[0]][coordinates[1]].setiSCalled(true);
+						if(p[coordinates[0]][coordinates[1]].getOwner() == owner.HUMAN) { 
+							displayGrid[coordinates[0]][coordinates[1]] = 'g'; 
+						} else { 
+							displayGrid[coordinates[0]][coordinates[1]] = 'G'; 
+						}
+						System.out.println("Grenade has been hit, next turn will be missed!");
+						displayGrid();
+						numOfTurns = 2;
+						return numOfTurns;
 				}
-				numOfTurns--;
-				return numOfTurns;
-			case GRENADE:
-				p[coordinates[0]][coordinates[1]].setiSCalled(true);
-				if(p[coordinates[0]][coordinates[1]].getOwner() == owner.HUMAN) { 
-					displayGrid[coordinates[0]][coordinates[1]] = 'g'; 
-				} else { 
-					displayGrid[coordinates[0]][coordinates[1]] = 'G'; 
-				}
-				
-				System.out.println("Grenade has been hit, next turn will be missed!");
-				displayGrid();
-				numOfTurns = 2;
-				return numOfTurns;
-			default:
-				return -1;
-		}
+			} 
+			
+			return -1;
 	} 
 	
-	// Place ships and grenades
+	// Places Ships & Grenades
     public void placeShipsAndGren(Owner owner, Type type) { 
     	int limit = 0;
-    	int[] coordinates = new int[2];
+    	//int[] coordinates = new int[2];
     	
-    	if(type == type.SHIP) { limit = 4;} 
-    	else limit = 6; 
+    	if(type == type.SHIP) { limit = 6;} 
+    	else limit = 4; // For Grenade
     	
+    	// Placing the Owner, Type of element (Ship or Grenade), and isCalled to false.
     	for(int i = 0; i < limit; i++) { 
     		coordinates = getCoords(owner, type);
     		p[coordinates[0]][coordinates[1]].setPlayer(owner, type, false);
     	}
 	}
     
-    // Get Coordinates
+    // Gets coordinates for Ships/Grenades/Rocket
     public int[] getCoords(Owner owner, Type type) { 
     	int[] coordinates = new int[2];
     	
@@ -124,7 +147,7 @@ public class Battleship {
     			System.out.print("Enter the coordinates of your " + type + " (H): "); 
         		coord = keyboard.nextLine();
         		
-        		if(coord.length() > 2) { continue;}
+        		if(coord.length() > 2) { continue; }
         		
         		coordinates[0] = charToInt(coord.charAt(0)) - 1;
         		coordinates[1] = Character.getNumericValue(coord.charAt(1)) - 1; 
@@ -134,7 +157,6 @@ public class Battleship {
         		coordinates[1] = (int)(Math.random() * 7) + 1;
         		
         		System.out.println("Entering the coordinates for " + type + " (C): ");
-
     		}
     		
     		if(!isValid(coordinates[0], coordinates[1])) { 
@@ -154,16 +176,17 @@ public class Battleship {
     	}
     }
     
-	// Declare winner
+	// Declares winner
 	public void winner(int human, int computer) { 
-		if(computer == 4) { 
+		// If human sinks computer's all 6 ships then Human is the winner
+		if(computer == 6) { 
 			System.out.println("Congratulations you have won the battle");
 		} else {
 			System.out.println("Sorry you have lost the battle, better luck next game!");
 		} 
 	}
 	
-	// Convert character to integer.
+	// Converts characters to integers.
 	public int charToInt(char c) { 
 		int converted;
 		
@@ -182,7 +205,7 @@ public class Battleship {
 		return (0 <= i && i <= 7) && (0 <= j && j <= 7);
 	}
 
-	// Initialize the display grid
+	// Initializes the grids: Player as well the display grid
 	public void initializeGrid() {
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++)  {
@@ -192,7 +215,7 @@ public class Battleship {
 		}	
 	}
 	
-	// Display all the characters in array
+	// Displays the grid after launching a rocket
 	public void displayGrid() { 
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++)  {
@@ -202,7 +225,7 @@ public class Battleship {
 		}
 	}
 	
-	// Display the Ship & Grenade position of each player
+	// Displays the positions of Ships & Grenades place by the Human & Computer.
 	public void displayInitialGrid() {
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++)  {
@@ -214,25 +237,23 @@ public class Battleship {
 					
 				case SHIP:
 					if(p[i][j].getOwner() == Owner.HUMAN) {
-						System.out.print('S' + " ");
-					} else { 
 						System.out.print('s' + " ");
+					} else { 
+						System.out.print('S' + " ");
 					}
 					break;
 					
 				case GRENADE:
 					if(p[i][j].getOwner() == Owner.HUMAN) {
-						System.out.print('G' + " ");
-					} else { 
 						System.out.print('g' + " ");
+					} else { 
+						System.out.print('G' + " ");
 					}
 					break;
 				}
-				
 			}
 			
 			System.out.println("");
-			
 		}
 	}
 }
