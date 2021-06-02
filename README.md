@@ -1,7 +1,7 @@
 # Battleship Game
   
 ## Description of the problem
-In this project a simplified version of [**Battleship**](https://en.wikipedia.org/wiki/Battleship_(game)) is built and player between Human (User) against Computer.
+In this project a simplified version of [**Battleship**](https://en.wikipedia.org/wiki/Battleship_(game)) is built and played between Human (User) against Computer.
 
 ## Rules
 1) Each player (Human & Computer) places 6 ships & 4 Grenades in each coordinate. Valid coordinates are character A-H or a-h followed by number 1 to 8.
